@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    // "target": "es2016",
+    "module": "commonjs",
+    "importHelpers": false,
+    "declaration": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "rootDir": "./src",
+    "target": "ES5"
+  },
+  "include": ["src/**/*.ts"]
+}
