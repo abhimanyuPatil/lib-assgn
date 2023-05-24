@@ -9,7 +9,7 @@ const rl = readline.createInterface({
   output: process.stdout,
 });
 
-function displayLibraries() {
+export function displayLibraries() {
   console.log("\n");
   console.log(`A. Library with books`);
   console.log(`B. Library with no books`);
@@ -25,6 +25,7 @@ function displayLibraries() {
         break;
       case "E":
         showMenu();
+        break;
       default:
         console.log("Invalid choice");
         displayLibraries();
@@ -32,7 +33,7 @@ function displayLibraries() {
   });
 }
 
-function userBorrowBook(index: number) {
+export function userBorrowBook(index: number) {
   const lib = SelectedLibrary.getInstance();
   const books = lib.getBooks();
   const user = User.getInstance();
@@ -46,7 +47,7 @@ function userBorrowBook(index: number) {
   lib.borrowBook(index);
 }
 
-function getBookId(choice: string) {
+export function getBookId(choice: string) {
   const lib = SelectedLibrary.getInstance();
   const books = lib.getBooks();
   const user = User.getInstance();
@@ -66,7 +67,7 @@ function getBookId(choice: string) {
   }
 }
 
-function displayUserBorrowedBook() {
+export function displayUserBorrowedBook() {
   const user = User.getInstance();
 
   if (user.borrowedBooks.length > 0) {
@@ -82,7 +83,7 @@ function displayUserBorrowedBook() {
   }
 }
 
-function displayBooksMenu() {
+export function displayBooksMenu() {
   rl.question("\n\n Enter book number to borrow", (choice: string) => {
     switch (choice.toLowerCase()) {
       case "e":
@@ -98,7 +99,7 @@ function displayBooksMenu() {
   });
 }
 
-function displayBooks() {
+export function displayBooks() {
   const lib = SelectedLibrary.getInstance();
   const books = lib.getBooks();
   if (books.length > 0) {
@@ -116,7 +117,7 @@ function displayBooks() {
   }
 }
 
-function initiateLibrary(lib: LibraryName) {
+export function initiateLibrary(lib: LibraryName) {
   const libAgg = LibraryGenerator.getInstance(lib);
   console.log(`👍🏻 Welcome to ${libAgg.name}`);
   new User();
@@ -124,7 +125,7 @@ function initiateLibrary(lib: LibraryName) {
 }
 
 // Function to display the menu options
-function showMenu() {
+export function showMenu() {
   console.log("\n");
   console.log("1. Select Library");
   console.log("2. Exit");
@@ -146,7 +147,7 @@ function showMenu() {
 
 // Start the application
 console.log(
-  "Library Management Console Application",
+  "📖Library Management Console Application📖",
   SelectedLibrary.getInstance()
 );
 showMenu();

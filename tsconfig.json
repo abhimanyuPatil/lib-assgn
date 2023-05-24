@@ -9,7 +9,7 @@
     "strict": true,
     "skipLibCheck": true,
     "rootDir": "./src",
-    "target": "ES5"
+    "target": "es6"
   },
   "include": ["src/**/*.ts"]
 }
