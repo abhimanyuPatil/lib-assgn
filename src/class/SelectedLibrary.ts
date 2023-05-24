@@ -12,6 +12,6 @@ export class SelectedLibrary extends Library {
   }
 
   static getInstance(): SelectedLibrary {
-    return this.instance;
+    return SelectedLibrary.instance;
   }
 }

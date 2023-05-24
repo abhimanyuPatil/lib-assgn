@@ -13,8 +13,10 @@ export class Library implements ILibrary {
   }
 
   borrowBook(index: number): string {
-    this.books.splice(index);
-    console.log("Borrowed");
-    return "Borrowed!";
+    const actualIndex = index - 1;
+    const book = this.books.find((_, i) => i === actualIndex);
+    this.books.splice(actualIndex, 1);
+    console.log(`Borrowed ${book?.name}!`);
+    return `Borrowed ${book?.name}!`;
   }
 }

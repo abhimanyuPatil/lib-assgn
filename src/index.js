@@ -1,73 +1,15 @@
 "use strict";
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-//=========================================
-// import readline from "readline";
-var readline = require("readline");
-var constants_1 = require("./constants");
-var rl = readline.createInterface({
+var readline_1 = __importDefault(require("readline"));
+var LibraryGenerator_1 = require("./class/LibraryGenerator");
+var SelectedLibrary_1 = require("./class/SelectedLibrary");
+var rl = readline_1.default.createInterface({
     input: process.stdin,
     output: process.stdout,
 });
-var instance;
-var Library = /** @class */ (function () {
-    function Library(books, name) {
-        if (instance) {
-            throw new Error("New instance cannot be created!!");
-        }
-        instance = this;
-        this.books = books;
-        this.name = name;
-    }
-    Library.prototype.getBooks = function () {
-        return this.books;
-    };
-    Library.prototype.borrowBook = function (index) {
-        this.books.splice(index);
-        console.log("Borrowed");
-        return "Borrowed!";
-    };
-    return Library;
-}());
-var SelectedLibrary = /** @class */ (function (_super) {
-    __extends(SelectedLibrary, _super);
-    function SelectedLibrary(books, name) {
-        var _this = _super.call(this, books, name) || this;
-        if (instance) {
-            return instance;
-        }
-        instance = _this;
-        return _this;
-    }
-    SelectedLibrary.getInstance = function () {
-        return this.instance;
-    };
-    return SelectedLibrary;
-}(Library));
-var LibraryAggregator = /** @class */ (function () {
-    function LibraryAggregator() {
-    }
-    LibraryAggregator.getInstance = function (libName) {
-        return libName === "A"
-            ? new SelectedLibrary(constants_1.books, "Library with books")
-            : new SelectedLibrary([], "Library with no books");
-    };
-    return LibraryAggregator;
-}());
 function displayLibraries() {
     console.log("\n");
     console.log("A. Library with books");
@@ -90,52 +32,50 @@ function displayLibraries() {
         }
     });
 }
-function getBookId() {
-    var lib = SelectedLibrary.getInstance();
-    console.log("lib==", lib);
+function getBookId(choice) {
+    var lib = SelectedLibrary_1.SelectedLibrary.getInstance();
     var books = lib.getBooks();
-    rl.question("\n Enter book number", function (choice) {
-        console.log("choice", choice, typeof choice);
-        if (isNaN(Number(choice)) || Number(choice) > books.length) {
-            console.log("Invalid choice");
-            displayBooks(books);
-            displayBooksMenu();
-            return;
-        }
-        lib.borrowBook(Number(choice));
-    });
+    if (isNaN(Number(choice)) || Number(choice) > books.length) {
+        console.log("Invalid choice");
+        displayBooks();
+        return;
+    }
+    lib.borrowBook(Number(choice));
+    displayBooks();
 }
 function displayBooksMenu() {
-    console.log("\n\n1. Borrow Book");
-    rl.question("\n Select your choice", function (choice) {
-        switch (choice) {
-            case "1":
-                getBookId();
-                break;
-            default:
-                console.log("Invalid choice");
-                console.log("E. Exit");
+    console.log("\n\n");
+    rl.question("\n\n Enter book number to borrow", function (choice) {
+        console.log("choice", choice);
+        if (choice === "e" || "E") {
+            console.log("in here");
+            rl.close();
+        }
+        else {
+            getBookId(choice);
         }
     });
 }
-function displayBooks(books) {
-    books.forEach(function (b, i) {
-        console.log("".concat(i + 1, ". ").concat(b.name, " by ").concat(b.author));
-    });
-    displayBooksMenu();
-}
-function initiateLibrary(lib) {
-    var libAgg = LibraryAggregator.getInstance(lib);
-    console.log("Welcome to ".concat(libAgg.name));
-    var books = libAgg.getBooks();
+function displayBooks() {
+    var lib = SelectedLibrary_1.SelectedLibrary.getInstance();
+    var books = lib.getBooks();
     if (books.length > 0) {
         console.log("Here are the books");
-        displayBooks(books);
+        books.forEach(function (b, i) {
+            console.log("\u2022( ".concat(i + 1, " ) \uD83D\uDCD6 ").concat(b.name, " by ").concat(b.author));
+        });
+        console.log("\n  Exit");
     }
     else {
         console.log("No books in this library");
         displayLibraries();
     }
+    displayBooksMenu();
+}
+function initiateLibrary(lib) {
+    var libAgg = LibraryGenerator_1.LibraryGenerator.getInstance(lib);
+    console.log("Welcome to ".concat(libAgg.name));
+    displayBooks();
 }
 // Function to display the menu options
 function showMenu() {
@@ -158,5 +98,5 @@ function showMenu() {
     });
 }
 // Start the application
-console.log("Library Management Console Application", SelectedLibrary.getInstance());
+console.log("Library Management Console Application", SelectedLibrary_1.SelectedLibrary.getInstance());
 showMenu();

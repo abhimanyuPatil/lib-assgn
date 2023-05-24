@@ -30,55 +30,52 @@ function displayLibraries() {
   });
 }
 
-function getBookId() {
+function getBookId(choice: string) {
   const lib = SelectedLibrary.getInstance();
-  console.log("lib==", lib);
   const books = lib.getBooks();
-  rl.question("\n Enter book number", (choice: string) => {
-    console.log("choice", choice, typeof choice);
-    if (isNaN(Number(choice)) || Number(choice) > books.length) {
-      console.log("Invalid choice");
-      displayBooks(books);
-      displayBooksMenu();
-      return;
-    }
+  if (isNaN(Number(choice)) || Number(choice) > books.length) {
+    console.log("Invalid choice");
+    displayBooks();
+    return;
+  }
 
-    lib.borrowBook(Number(choice));
-  });
+  lib.borrowBook(Number(choice));
+  displayBooks();
 }
 
 function displayBooksMenu() {
-  console.log("\n\n1. Borrow Book");
-  rl.question("\n Select your choice", (choice: string) => {
-    switch (choice) {
-      case "1":
-        getBookId();
-        break;
-      default:
-        console.log("Invalid choice");
-        console.log("E. Exit");
+  console.log("\n\n");
+  rl.question("\n\n Enter book number to borrow", (choice: string) => {
+    if (choice === "e" || "E") {
+      rl.close();
+    } else {
+      getBookId(choice);
     }
   });
 }
 
-function displayBooks(books: Books[]) {
-  books.forEach((b, i) => {
-    console.log(`${i + 1}. ${b.name} by ${b.author}`);
-  });
+function displayBooks() {
+  const lib = SelectedLibrary.getInstance();
+  const books = lib.getBooks();
+  if (books.length > 0) {
+    console.log("Here are the books");
+    books.forEach((b, i) => {
+      console.log(`•( ${i + 1} ) 📖 ${b.name} by ${b.author}`);
+    });
+
+    console.log("\n  Exit");
+  } else {
+    console.log("No books in this library");
+    displayLibraries();
+  }
+
   displayBooksMenu();
 }
 
 function initiateLibrary(lib: LibraryName) {
   const libAgg = LibraryGenerator.getInstance(lib);
   console.log(`Welcome to ${libAgg.name}`);
-  const books = libAgg.getBooks();
-  if (books.length > 0) {
-    console.log("Here are the books");
-    displayBooks(books);
-  } else {
-    console.log("No books in this library");
-    displayLibraries();
-  }
+  displayBooks();
 }
 
 // Function to display the menu options
