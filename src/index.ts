@@ -31,6 +31,7 @@ function displayLibraries() {
 }
 
 function getBookId(choice: string) {
+  console.log("in here");
   const lib = SelectedLibrary.getInstance();
   const books = lib.getBooks();
   if (isNaN(Number(choice)) || Number(choice) > books.length) {
@@ -44,12 +45,17 @@ function getBookId(choice: string) {
 }
 
 function displayBooksMenu() {
-  console.log("\n\n");
   rl.question("\n\n Enter book number to borrow", (choice: string) => {
-    if (choice === "e" || "E") {
-      rl.close();
-    } else {
-      getBookId(choice);
+    switch (choice) {
+      case "e":
+        rl.close();
+        break;
+      case "E":
+        rl.close();
+        break;
+      default:
+        getBookId(choice);
+        break;
     }
   });
 }
@@ -58,18 +64,18 @@ function displayBooks() {
   const lib = SelectedLibrary.getInstance();
   const books = lib.getBooks();
   if (books.length > 0) {
-    console.log("Here are the books");
+    console.log("\nHere are the books");
     books.forEach((b, i) => {
       console.log(`•( ${i + 1} ) 📖 ${b.name} by ${b.author}`);
     });
 
-    console.log("\n  Exit");
+    console.log("\n E. Exit");
+
+    displayBooksMenu();
   } else {
     console.log("No books in this library");
-    displayLibraries();
+    rl.close();
   }
-
-  displayBooksMenu();
 }
 
 function initiateLibrary(lib: LibraryName) {

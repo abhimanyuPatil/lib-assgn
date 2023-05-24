@@ -33,6 +33,7 @@ function displayLibraries() {
     });
 }
 function getBookId(choice) {
+    console.log("in here");
     var lib = SelectedLibrary_1.SelectedLibrary.getInstance();
     var books = lib.getBooks();
     if (isNaN(Number(choice)) || Number(choice) > books.length) {
@@ -44,15 +45,17 @@ function getBookId(choice) {
     displayBooks();
 }
 function displayBooksMenu() {
-    console.log("\n\n");
     rl.question("\n\n Enter book number to borrow", function (choice) {
-        console.log("choice", choice);
-        if (choice === "e" || "E") {
-            console.log("in here");
-            rl.close();
-        }
-        else {
-            getBookId(choice);
+        switch (choice) {
+            case "e":
+                rl.close();
+                break;
+            case "E":
+                rl.close();
+                break;
+            default:
+                getBookId(choice);
+                break;
         }
     });
 }
@@ -60,17 +63,17 @@ function displayBooks() {
     var lib = SelectedLibrary_1.SelectedLibrary.getInstance();
     var books = lib.getBooks();
     if (books.length > 0) {
-        console.log("Here are the books");
+        console.log("\nHere are the books");
         books.forEach(function (b, i) {
             console.log("\u2022( ".concat(i + 1, " ) \uD83D\uDCD6 ").concat(b.name, " by ").concat(b.author));
         });
-        console.log("\n  Exit");
+        console.log("\n E. Exit");
+        displayBooksMenu();
     }
     else {
         console.log("No books in this library");
-        displayLibraries();
+        rl.close();
     }
-    displayBooksMenu();
 }
 function initiateLibrary(lib) {
     var libAgg = LibraryGenerator_1.LibraryGenerator.getInstance(lib);
