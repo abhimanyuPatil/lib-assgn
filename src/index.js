@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var readline_1 = __importDefault(require("readline"));
 var LibraryGenerator_1 = require("./class/LibraryGenerator");
 var SelectedLibrary_1 = require("./class/SelectedLibrary");
+var User_1 = require("./class/User");
 var rl = readline_1.default.createInterface({
     input: process.stdin,
     output: process.stdout,
@@ -32,26 +33,59 @@ function displayLibraries() {
         }
     });
 }
-function getBookId(choice) {
-    console.log("in here");
+function userBorrowBook(index) {
     var lib = SelectedLibrary_1.SelectedLibrary.getInstance();
     var books = lib.getBooks();
+    var user = User_1.User.getInstance();
+    if (user.borrowedBooks.length > 2) {
+        console.log("\nYou can borrow 2 books at a time");
+        displayBooks();
+        return;
+    }
+    var book = books.find(function (_, i) { return i === index - 1; });
+    user.addBook(book);
+    lib.borrowBook(index);
+}
+function getBookId(choice) {
+    var lib = SelectedLibrary_1.SelectedLibrary.getInstance();
+    var books = lib.getBooks();
+    var user = User_1.User.getInstance();
     if (isNaN(Number(choice)) || Number(choice) > books.length) {
         console.log("Invalid choice");
         displayBooks();
         return;
     }
-    lib.borrowBook(Number(choice));
-    displayBooks();
+    if (user.borrowedBooks.length < 2) {
+        userBorrowBook(Number(choice));
+        displayBooks();
+    }
+    else {
+        console.log("\n You can borrow 2 books at a time");
+        displayBooks();
+    }
+}
+function displayUserBorrowedBook() {
+    var user = User_1.User.getInstance();
+    if (user.borrowedBooks.length > 0) {
+        console.log("Borrowed books 👇🏻");
+        user.borrowedBooks.forEach(function (b, i) {
+            console.log("\u2022( ".concat(i + 1, " ) \uD83D\uDCD6 ").concat(b.name, " by ").concat(b.author));
+        });
+        displayBooks();
+    }
+    else {
+        console.log("\n No books borrowed yet.");
+        displayBooks();
+    }
 }
 function displayBooksMenu() {
     rl.question("\n\n Enter book number to borrow", function (choice) {
-        switch (choice) {
+        switch (choice.toLowerCase()) {
             case "e":
                 rl.close();
                 break;
-            case "E":
-                rl.close();
+            case "v":
+                displayUserBorrowedBook();
                 break;
             default:
                 getBookId(choice);
@@ -63,10 +97,11 @@ function displayBooks() {
     var lib = SelectedLibrary_1.SelectedLibrary.getInstance();
     var books = lib.getBooks();
     if (books.length > 0) {
-        console.log("\nHere are the books");
+        console.log("\n Books in Library 👇🏻");
         books.forEach(function (b, i) {
             console.log("\u2022( ".concat(i + 1, " ) \uD83D\uDCD6 ").concat(b.name, " by ").concat(b.author));
         });
+        console.log("\n V. View borrowed books 📖");
         console.log("\n E. Exit");
         displayBooksMenu();
     }
@@ -78,6 +113,7 @@ function displayBooks() {
 function initiateLibrary(lib) {
     var libAgg = LibraryGenerator_1.LibraryGenerator.getInstance(lib);
     console.log("Welcome to ".concat(libAgg.name));
+    new User_1.User();
     displayBooks();
 }
 // Function to display the menu options

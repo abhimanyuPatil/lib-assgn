@@ -1,3 +1,5 @@
+/// <reference types="node" />
+import { UUID } from "crypto";
 export interface ILibrary {
     name: string;
     books: Books[];
@@ -7,5 +9,6 @@ export interface ILibrary {
 export type Books = {
     name: string;
     author: string;
+    id: UUID;
 };
 export type LibraryName = "A" | "B";

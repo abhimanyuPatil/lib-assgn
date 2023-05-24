@@ -2,6 +2,8 @@ import readline from "readline";
 import { LibraryGenerator } from "./class/LibraryGenerator";
 import { SelectedLibrary } from "./class/SelectedLibrary";
 import { Books, LibraryName } from "./interfaces";
+import { User } from "./class/User";
+import { Book } from "./class/Book";
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout,
@@ -30,28 +32,64 @@ function displayLibraries() {
   });
 }
 
-function getBookId(choice: string) {
-  console.log("in here");
+function userBorrowBook(index: number) {
   const lib = SelectedLibrary.getInstance();
   const books = lib.getBooks();
+  const user = User.getInstance();
+  if (user.borrowedBooks.length > 2) {
+    console.log("\n ❌ You can borrow 2 books at a time");
+    displayBooks();
+    return;
+  }
+  const book = books.find((_, i) => i === index - 1) as Book;
+  user.addBook(book);
+  lib.borrowBook(index);
+}
+
+function getBookId(choice: string) {
+  const lib = SelectedLibrary.getInstance();
+  const books = lib.getBooks();
+  const user = User.getInstance();
+
   if (isNaN(Number(choice)) || Number(choice) > books.length) {
-    console.log("Invalid choice");
+    console.log("❌ Invalid choice");
     displayBooks();
     return;
   }
 
-  lib.borrowBook(Number(choice));
-  displayBooks();
+  if (user.borrowedBooks.length < 2) {
+    userBorrowBook(Number(choice));
+    displayBooks();
+  } else {
+    console.log("\n ❌ You can borrow 2 books at a time");
+    displayBooks();
+  }
+}
+
+function displayUserBorrowedBook() {
+  const user = User.getInstance();
+
+  if (user.borrowedBooks.length > 0) {
+    console.log("Borrowed books 👇🏻");
+    user.borrowedBooks.forEach((b, i) => {
+      console.log(`•( ${i + 1} ) 📖 ${b.name} by ${b.author}`);
+    });
+
+    displayBooks();
+  } else {
+    console.log("\n No books borrowed yet.");
+    displayBooks();
+  }
 }
 
 function displayBooksMenu() {
   rl.question("\n\n Enter book number to borrow", (choice: string) => {
-    switch (choice) {
+    switch (choice.toLowerCase()) {
       case "e":
         rl.close();
         break;
-      case "E":
-        rl.close();
+      case "v":
+        displayUserBorrowedBook();
         break;
       default:
         getBookId(choice);
@@ -64,23 +102,24 @@ function displayBooks() {
   const lib = SelectedLibrary.getInstance();
   const books = lib.getBooks();
   if (books.length > 0) {
-    console.log("\nHere are the books");
+    console.log("\n Books in Library 👇🏻");
     books.forEach((b, i) => {
       console.log(`•( ${i + 1} ) 📖 ${b.name} by ${b.author}`);
     });
-
+    console.log("\n V. View borrowed books 📖");
     console.log("\n E. Exit");
 
     displayBooksMenu();
   } else {
-    console.log("No books in this library");
+    console.log("❌ No books in this library");
     rl.close();
   }
 }
 
 function initiateLibrary(lib: LibraryName) {
   const libAgg = LibraryGenerator.getInstance(lib);
-  console.log(`Welcome to ${libAgg.name}`);
+  console.log(`👍🏻 Welcome to ${libAgg.name}`);
+  new User();
   displayBooks();
 }
 
@@ -98,7 +137,7 @@ function showMenu() {
         rl.close();
         break;
       default:
-        console.log("Invalid choice!");
+        console.log("❌ Invalid choice!");
         showMenu();
         break;
     }
